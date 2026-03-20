@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "Tablón Hartford",
+    "slug": "tablon-hartford",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo-hartford.png",
+    "splash": {
+      "backgroundColor": "#0f1e30"
+    },
+    "newArchEnabled": false,
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo-hartford.png",
+        "backgroundColor": "#0f1e30"
+      }
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
+  }
+}

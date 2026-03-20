@@ -182,3 +182,13 @@ async def list_mentionables(
         select(User).where(User.is_active == True).order_by(User.name)
     )
     return result.scalars().all()
+#______APP: usuarios para la aplicacion movil_________________________
+@router.get("/mentionables", response_model=list[UserOut])
+async def list_mentionables(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    result = await db.execute(
+        select(User).where(User.is_active == True).order_by(User.name)
+    )
+    return result.scalars().all()
