@@ -40,7 +40,7 @@ export default function MessageInput({ onSend, accentColor, subchannelName }) {
   // Cargar usuarios para menciones
   useEffect(() => {
     const token = getToken();
-    fetch(`${BASE}/api/users`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${BASE}/api/users/mentionables`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.ok ? r.json() : [])
       .then((data) => setUsers(Array.isArray(data) ? data : []))
       .catch(() => {});
