@@ -170,3 +170,15 @@ async def delete_user(
         raise HTTPException(404, "Usuario no encontrado")
     await db.delete(user)
     await db.commit()
+
+#_____Publico: listar en menciones _______________________________
+@router.get("/mentionables", response_model=list[UserOut])
+async def list_mentionables(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Todos los usuarios activos — para el desplegable de menciones."""
+    result = await db.execute(
+        select(User).where(User.is_active == True).order_by(User.name)
+    )
+    return result.scalars().all()
