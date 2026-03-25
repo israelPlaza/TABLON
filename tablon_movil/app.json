@@ -10,6 +10,7 @@
     },
     "newArchEnabled": false,
     "android": {
+    "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo-hartford.png",
         "backgroundColor": "#0f1e30"

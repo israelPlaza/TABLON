@@ -8,28 +8,28 @@ import {
   apiGetMessages, apiSendMessage, apiDeleteMessage,
   apiToggleReaction, apiGetMentionables, openWebSocket, BASE, getToken,
 } from '../api/client';
-
+ 
 const EMOJIS = ['👍', '❤️', '😂', '😮', '✅', '🙌', '🔥', '📅'];
 const COLORS = ['#E85D04', '#3A86FF', '#8338EC', '#06D6A0', '#FB5607', '#FF006E'];
-
+ 
 function avatarColor(name = '') {
   return COLORS[name.charCodeAt(0) % COLORS.length];
 }
-
+ 
 function formatSize(bytes) {
   if (!bytes) return '';
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
-
+ 
 function MessageItem({ message, currentUser, onReact, onDelete }) {
   const [showEmojis, setShowEmojis] = useState(false);
   const canDelete = currentUser?.id === message.author.id || currentUser?.is_admin;
   const time = new Date(message.created_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
   const firstName = currentUser?.name?.split(' ')[0]?.toLowerCase() || '';
   const mentionsMe = message.text?.toLowerCase().includes(`@${firstName}`);
-
+ 
   const handleLongPress = () => {
     const options = ['Reaccionar', canDelete ? 'Borrar mensaje' : null, 'Cancelar'].filter(Boolean);
     Alert.alert('Opciones', '', options.map((opt, i) => ({
@@ -41,7 +41,7 @@ function MessageItem({ message, currentUser, onReact, onDelete }) {
       },
     })));
   };
-
+ 
   return (
     <TouchableOpacity
       onLongPress={handleLongPress}
@@ -69,7 +69,7 @@ function MessageItem({ message, currentUser, onReact, onDelete }) {
               })}
             </Text>
           ) : null}
-
+ 
           {message.file_url && (
             <View style={styles.fileAttach}>
               <Text style={styles.fileIcon}>📎</Text>
@@ -79,7 +79,7 @@ function MessageItem({ message, currentUser, onReact, onDelete }) {
               </View>
             </View>
           )}
-
+ 
           {message.reactions?.length > 0 && (
             <View style={styles.reactions}>
               {message.reactions.map((r) => (
@@ -90,7 +90,7 @@ function MessageItem({ message, currentUser, onReact, onDelete }) {
             </View>
           )}
         </View>
-
+ 
         {showEmojis && (
           <View style={styles.emojiPicker}>
             {EMOJIS.map((e) => (
@@ -107,7 +107,7 @@ function MessageItem({ message, currentUser, onReact, onDelete }) {
     </TouchableOpacity>
   );
 }
-
+ 
 export default function MessagesScreen({ route, navigation }) {
   const { channel, subchannel } = route.params;
   const { user } = useAuth();
@@ -121,14 +121,14 @@ export default function MessagesScreen({ route, navigation }) {
   const flatListRef = useRef(null);
   const wsRef = useRef(null);
   const subchannelIdRef = useRef(subchannel.id);
-
+ 
   useEffect(() => { subchannelIdRef.current = subchannel.id; }, [subchannel.id]);
-
+ 
   // Cargar usuarios para menciones
   useEffect(() => {
     apiGetMentionables().then(setMentionUsers).catch(() => {});
   }, []);
-
+ 
   const applyEvent = useCallback((event) => {
     if (event.subchannel_id !== subchannelIdRef.current) return;
     if (event.type === 'new_message') {
@@ -140,18 +140,18 @@ export default function MessagesScreen({ route, navigation }) {
       setMessages((prev) => prev.filter((m) => m.id !== event.payload.id));
     }
   }, []);
-
+ 
   useEffect(() => {
     setMessages([]);
     setLoading(true);
     apiGetMessages(subchannel.id)
       .then((data) => { setMessages(data.messages); setLoading(false); })
       .catch(() => setLoading(false));
-
+ 
     openWebSocket(subchannel.id, applyEvent).then((ws) => { wsRef.current = ws; });
     return () => { wsRef.current?.close(); };
   }, [subchannel.id]);
-
+ 
   const handleTextChange = (val) => {
     setText(val);
     const match = val.match(/@(\w*)$/);
@@ -165,7 +165,7 @@ export default function MessagesScreen({ route, navigation }) {
       setMentionResults([]);
     }
   };
-
+ 
   const insertMention = (u) => {
     if (!mentionQuery) return;
     const before = text.slice(0, mentionQuery.start);
@@ -174,7 +174,7 @@ export default function MessagesScreen({ route, navigation }) {
     setMentionQuery(null);
     setMentionResults([]);
   };
-
+ 
   const handleSend = async () => {
     if (!text.trim() || sending) return;
     setSending(true);
@@ -187,17 +187,17 @@ export default function MessagesScreen({ route, navigation }) {
       setSending(false);
     }
   };
-
+ 
   const handleDelete = async (id) => {
     try { await apiDeleteMessage(id); } catch (e) { Alert.alert('Error', 'No se pudo borrar'); }
   };
-
+ 
   const handleReact = async (id, emoji) => {
     try { await apiToggleReaction(id, emoji); } catch (_) {}
   };
-
+ 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'android' ? 25 : 0}>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
@@ -211,7 +211,7 @@ export default function MessagesScreen({ route, navigation }) {
           <Text style={styles.headerSub} numberOfLines={1}>{subchannel.name}</Text>
         </View>
       </View>
-
+ 
       {/* Mensajes */}
       {loading ? (
         <View style={styles.center}><ActivityIndicator color="#E8192C" /></View>
@@ -238,7 +238,7 @@ export default function MessagesScreen({ route, navigation }) {
           contentContainerStyle={{ padding: 12, flexGrow: 1 }}
         />
       )}
-
+ 
       {/* Desplegable menciones */}
       {mentionResults.length > 0 && (
         <View style={styles.mentionDropdown}>
@@ -252,7 +252,7 @@ export default function MessagesScreen({ route, navigation }) {
           ))}
         </View>
       )}
-
+ 
       {/* Input */}
       <View style={styles.inputBar}>
         <TextInput
@@ -274,7 +274,7 @@ export default function MessagesScreen({ route, navigation }) {
     </KeyboardAvoidingView>
   );
 }
-
+ 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0d0d12' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
@@ -317,7 +317,8 @@ const styles = StyleSheet.create({
   mentionName: { color: '#e0e0e0', fontSize: 13, fontWeight: '600' },
   inputBar: {
     flexDirection: 'row', alignItems: 'flex-end', gap: 8,
-    padding: 10, borderTopWidth: 1, borderTopColor: '#1e1e28', backgroundColor: '#111118',
+    padding: 10, paddingBottom: 30,
+    borderTopWidth: 1, borderTopColor: '#1e1e28', backgroundColor: '#111118',
   },
   input: {
     flex: 1, backgroundColor: '#1a1a22', borderWidth: 1, borderColor: '#2a2a35',
