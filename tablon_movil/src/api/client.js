@@ -25,16 +25,23 @@ const authFetch = async (url, opts = {}) => {
   }
   return res.status === 204 ? null : res.json();
 };
-
 export const apiLogin = async (email, password) => {
-  const res = await fetch(`${BASE}/api/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  });
-  if (!res.ok) throw new Error('Email o contraseña incorrectos');
-  return res.json();
+  try {
+    const res = await fetch(`${BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Error ${res.status}`);
+    }
+    return res.json();
+  } catch (e) {
+    throw new Error(`Login failed: ${e.message}`);
+  }
 };
+
 
 export const apiMe = () => authFetch('/api/auth/me');
 export const apiGetChannels = () => authFetch('/api/channels');

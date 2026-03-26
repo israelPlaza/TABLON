@@ -1,23 +1,41 @@
 {
   "expo": {
     "name": "Tablón Hartford",
-    "slug": "tablon-hartford",
+    "slug": "tablon",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo-hartford.png",
     "splash": {
+      "image": "./assets/logo-hartford.png",
+      "resizeMode": "contain",
       "backgroundColor": "#0f1e30"
     },
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "android": {
-    "softwareKeyboardLayoutMode": "pan",
+      "softwareKeyboardLayoutMode": "pan",
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo-hartford.png",
         "backgroundColor": "#0f1e30"
-      }
+      },
+      "package": "com.israapps.tablon"
     },
     "plugins": [
-      "expo-secure-store"
-    ]
+      "expo-secure-store",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ece0d774-fcb0-4cb7-ba5e-fd65ff9b015e"
+      }
+    },
+    "owner": "israapps"
   }
 }
